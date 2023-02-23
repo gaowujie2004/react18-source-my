@@ -1,16 +1,8 @@
-import { REACT_FILTER_PROPS } from './const';
+import { REACT_FILTER_PROPS } from './constants';
 import { REACT_ELEMENT_TYPE } from 'shared/react-symbol';
 import { hasOwnProperty } from 'shared/has-own-property';
 
 export function jsxDEV(type, config: Config, explicitKey?: string): JSXElement {
-  const props = {} as AnyObj;
-  let propName: string;
-  for (propName in config) {
-    if (hasOwnProperty(config, propName) && !hasOwnProperty(REACT_FILTER_PROPS, propName)) {
-      props[propName] = config[propName];
-    }
-  }
-
   let key = null;
   let ref = null;
   if (explicitKey !== undefined) {
@@ -25,6 +17,17 @@ export function jsxDEV(type, config: Config, explicitKey?: string): JSXElement {
     ref = config.ref;
   }
 
+  const props = {} as AnyObj;
+  let propName: string;
+  for (propName in config) {
+    if (!hasOwnProperty(config, propName) || REACT_FILTER_PROPS.includes(propName)) {
+      continue;
+    }
+
+    // TODO 到底好不好
+    props[propName] = config[propName];
+  }
+
   return createReactElement(type, key, ref, props);
 }
 
@@ -34,7 +37,6 @@ function hasLegalKey(config) {
 function hasLegalRef(config) {
   return config.ref !== undefined;
 }
-
 function createReactElement(type: string, key: string | null, ref: any | null, props: AnyObj) {
   return {
     $$typeof: REACT_ELEMENT_TYPE, // 判断一个对象是否是ReactElement
