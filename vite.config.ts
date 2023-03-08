@@ -7,6 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       react: path.join(__dirname, './src/react'),
+      'react-dom': path.join(__dirname, './src/react-dom'),
       share: path.join(__dirname, './src/shared'),
     },
   },

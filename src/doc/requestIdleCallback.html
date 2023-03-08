@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      const WORK_LIST = [
+        () => {
+          console.log('第一个任务开始');
+          sleep();
+          console.log('第一个任务结束');
+        },
+        () => {
+          console.log('第二二个任务开始');
+          sleep();
+          console.log('第二二个任务结束');
+        },
+        () => {
+          console.log('第三三三个任务开始');
+          sleep();
+          console.log('第三三三个任务结束');
+        },
+      ];
+
+      function sleep(duration = 200) {
+        for (const now = Date.now(); Date.now() - now <= duration; ) {}
+      }
+
+      /**================================== 开始 **/
+      function workLoop(deadline) {
+        while (deadline.timeRemaining() >= 1 && WORK_LIST.length) {
+          // 有时间片 && 有任务
+          console.log('执行任务单元，本帧剩余时间：', deadline.timeRemaining(), deadline.didTimeout);
+          performanceUniOfWork();
+        }
+
+        if (WORK_LIST.length) {
+          // 没有时间片
+          requestIdleCallback(workLoop);
+        }
+      }
+
+      /**
+       * @description 执行一个任务单元
+       */
+      function performanceUniOfWork() {
+        WORK_LIST.shift()();
+      }
+
+      requestIdleCallback(workLoop);
+    </script>
+  </body>
+</html>
