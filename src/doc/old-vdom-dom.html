@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VDOM -》 DOM，不使用Fiber架构</title>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script>
+      // let el = (
+      //   <div>
+      //     <div id="A1">
+      //       <div id="A1-1">A1-1</div>
+      //       <div id="A1-2">A1-2</div>
+      //     </div>
+      //     <div id="B1">
+      //       <div id="B1-1">B1-1</div>
+      //     </div>
+      //   </div>
+      // );
+
+      const vdomTree = {
+        type: 'div',
+        key: null,
+        ref: null,
+        props: {
+          children: [
+            {
+              type: 'div',
+              key: null,
+              ref: null,
+              props: {
+                id: 'A1',
+                children: [
+                  {
+                    type: 'div',
+                    key: null,
+                    ref: null,
+                    props: {
+                      id: 'A1-1',
+                      children: 'A1-1',
+                    },
+                  },
+                  {
+                    type: 'div',
+                    key: null,
+                    ref: null,
+                    props: {
+                      id: 'A1-2',
+                      children: 'A1-2',
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              type: 'div',
+              key: null,
+              ref: null,
+              props: {
+                id: 'B1',
+                children: {
+                  type: 'div',
+                  key: null,
+                  ref: null,
+                  props: {
+                    id: 'B1-1',
+                    children: 'B1-1',
+                  },
+                },
+              },
+            },
+          ],
+        },
+      };
+
+      function render(vdom, container) {
+        const domNode = document.createElement(vdom.type);
+
+        for (const [key, value] of Object.entries(vdom.props)) {
+          if (key === 'children') {
+            continue;
+          }
+          domNode.setAttribute(key, value);
+        }
+
+        // 后序遍历
+        if (Array.isArray(vdom.props.children)) {
+          vdom.props.children.forEach((child) => render(child, domNode));
+        }
+
+        container.append(domNode);
+      }
+
+      render(vdomTree, document.getElementById('root'));
+    </script>
+  </body>
+</html>
